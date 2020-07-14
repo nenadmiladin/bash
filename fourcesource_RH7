@@ -1,12 +1,13 @@
 #!/bin/bash
 # A script to prepare the source Machine for Data Transfer 
-# 
+# Data in <...> needs to changes according to use case
+
 export PATH=/usr/local/etc:/sbin:/usr/sbin:/etc:/usr/etc:/usr/etc/yp:/usr/local/bin:/bin:/usr/bin:/usr/bin/X11:/root/bin
 
 NAME=$(nmcli c s | grep -v "eno1" | tail -n 1 | awk '{ print $1}')
 UUID=$(nmcli c s | grep -v "eno1" | tail -n 1 | awk '{ print $2}')
 
-echo $(date) "SOURCE-BOOT (Data Transfer Source), $NAME 192.168.1.2" >> /scratch/startup.log
+echo $(date) "SOURCE-BOOT (Data Transfer Source), $NAME 192.168.1.2" >> < /scratch/startup.log >
 
 mv /etc/sysconfig/network-scripts/ifcfg-$NAME /etc/sysconfig/network-scripts/ifcfg-$NAME.org
 
@@ -34,14 +35,14 @@ systemctl start nfs
 
 rm -f /etc/exports
 
-echo -e "/scratch @trust 192.168.1.1(rw,sync,subtree_check,no_root_squash)" > /etc/exports
+echo -e "</scratch> @trust 192.168.1.1(rw,sync,subtree_check,no_root_squash)" > /etc/exports
 
-for folder in $(df -h | grep "/net/$(hostname)/fs." | grep -o '...$')
+for folder in $(df -h | grep "</net/$(hostname)/fs.>" | grep -o '...$')
 do
-        echo -e "/net/$(hostname)/$folder @trust 192.168.1.1(rw,sync,subtree_check,no_root_squash)" >> /etc/exports
+        echo -e "</net/$(hostname)/$folder> @trust 192.168.1.1(rw,sync,subtree_check,no_root_squash)" >> /etc/exports
 done
 
 /usr/sbin/exportfs -rv
 
 echo $(date) "The Workstation is prepared for File Transfer" >> /scratch/startup.log
-echo -e "File Transfer ready on the old $(hostname) Machine \\n $(df -h | grep "/net/$(hostname)/fs")" | mail -s "File Transfer Source" <e-mail>
+echo -e "File Transfer ready on the old $(hostname) Machine \\n $(df -h | grep "</net/$(hostname)/fs>")" | mail -s "File Transfer Source" <e-mail>
