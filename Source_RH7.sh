@@ -35,8 +35,9 @@ systemctl start nfs
 
 rm -f /etc/exports
 
-echo -e "</scratch> @trust 192.168.1.1(rw,sync,subtree_check,no_root_squash)" > /etc/exports
-
+# One Folder to be exported 
+echo -e "</PATH> @trust 192.168.1.1(rw,sync,subtree_check,no_root_squash)" > /etc/exports
+# Multiple Folders
 for folder in $(df -h | grep "</net/$(hostname)/fs.>" | grep -o '...$')
 do
         echo -e "</net/$(hostname)/$folder> @trust 192.168.1.1(rw,sync,subtree_check,no_root_squash)" >> /etc/exports
