@@ -44,5 +44,5 @@ done
 
 /usr/sbin/exportfs -rv
 
-echo $(date) "The Workstation is prepared for File Transfer" >> /scratch/startup.log
+echo $(date) "The Workstation is prepared for File Transfer" >> </scratch/startup.log>
 echo -e "File Transfer ready on the old $(hostname) Machine \\n $(df -h | grep "</net/$(hostname)/fs>")" | mail -s "File Transfer Source" <e-mail>
