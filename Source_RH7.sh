@@ -1,6 +1,6 @@
 #!/bin/bash
 # A script to prepare the source Machine for Data Transfer 
-# Data in <...> needs to changes according to use case
+# Data in <...> needs to be changed according to use case
 
 export PATH=/usr/local/etc:/sbin:/usr/sbin:/etc:/usr/etc:/usr/etc/yp:/usr/local/bin:/bin:/usr/bin:/usr/bin/X11:/root/bin
 
