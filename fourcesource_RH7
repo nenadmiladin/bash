@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+# + Umgebungsvariablen, damit die Programme ohne Probleme aufgerufen werden koennen
+export PATH=/usr/local/etc:/sbin:/usr/sbin:/etc:/usr/etc:/usr/etc/yp:/usr/local/bin:/usr/local/kde/3/bin:/usr/local/qt/3/bin:/bin:/usr/bin:/usr/bin/X11:/opt/kde/bin:/root/bin
+
+#force einstellung als quelle
+
+NAME=$(nmcli c s | grep -v "eno1" | tail -n 1 | awk '{ print $1}')
+UUID=$(nmcli c s | grep -v "eno1" | tail -n 1 | awk '{ print $2}')
+echo $(date) "SOURCE-BOOT (DaSi-Quelle), $NAME 192.168.1.2" >> /scratch/startup.log
+
+mv /etc/sysconfig/network-scripts/ifcfg-$NAME /etc/sysconfig/network-scripts/ifcfg-$NAME.org
+
+echo TYPE="Ethernet" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo PROXY_METHOD="none" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo BROWSER_ONLY="no" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo BOOTPROTO="none" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo IPADDR="192.168.1.2" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo PREFIX="24" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo IPV4_FAILURE_FATAL="no" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo IPV6INIT="no" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo IPV6_AUTOCONF="no" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo IPV6_DEFROUTE=no="no" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo IPV6_FAILURE_FATAL="no" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo IPV6_ADDR_GEN_MODE="no" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo NAME=$NAME >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo UUID=$UUID >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo DEVICE="$NAME" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+echo ONBOOT="yes" >> /etc/sysconfig/network-scripts/ifcfg-$NAME
+
+
+/sbin/ifdown $NAME; /sbin/ifup $NAME
+
+systemctl start nfs 
+
+rm -f /etc/exports
+
+echo -e "/scratch @trust 192.168.1.1(rw,sync,subtree_check,no_root_squash)" > /etc/exports
+
+for folder in $(df -h | grep "/net/$(hostname)/fs." | grep -o '...$')
+do
+        echo -e "/net/$(hostname)/$folder @trust 192.168.1.1(rw,sync,subtree_check,no_root_squash)" >> /etc/exports
+done
+
+/usr/sbin/exportfs -rv
+
+echo $(date) "Die Workstation ist ab jetzt bereit für die DaSi." >> /scratch/startup.log
+echo "Port 2 angeschlossen, Workstation ist bereit als DaSi-Quelle." > /dev/tty1
+echo "Port 2 angeschlossen, Workstation ist bereit als DaSi-Quelle." > /dev/tty2
+echo -e "Dasi auf der alten $(hostname) Maschine vorbereitet \\n $(df -h | grep "/net/$(hostname)/fs")" | mail -s "Dasi Force" ca-linux-client-support@bmwgroup.com
