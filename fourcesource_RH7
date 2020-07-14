@@ -1,12 +1,13 @@
 #!/bin/bash
 #
 # + Umgebungsvariablen, damit die Programme ohne Probleme aufgerufen werden koennen
-export PATH=/usr/local/etc:/sbin:/usr/sbin:/etc:/usr/etc:/usr/etc/yp:/usr/local/bin:/usr/local/kde/3/bin:/usr/local/qt/3/bin:/bin:/usr/bin:/usr/bin/X11:/opt/kde/bin:/root/bin
+export PATH=/usr/local/etc:/sbin:/usr/sbin:/etc:/usr/etc:/usr/etc/yp:/usr/local/bin:/bin:/usr/bin:/usr/bin/X11:/root/bin
 
 #force einstellung als quelle
 
 NAME=$(nmcli c s | grep -v "eno1" | tail -n 1 | awk '{ print $1}')
 UUID=$(nmcli c s | grep -v "eno1" | tail -n 1 | awk '{ print $2}')
+
 echo $(date) "SOURCE-BOOT (DaSi-Quelle), $NAME 192.168.1.2" >> /scratch/startup.log
 
 mv /etc/sysconfig/network-scripts/ifcfg-$NAME /etc/sysconfig/network-scripts/ifcfg-$NAME.org
